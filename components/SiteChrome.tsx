@@ -8,11 +8,18 @@ export function TopStrip() {
     <section className="top-strip" aria-label="Contact information">
       <p>✦ Guided by Soul. Rooted in Truth. ✦</p>
       <div className="top-contact">
-        <span><Icon name="phone" /> +44 1234 567890</span>
-        <span><Icon name="mail" /> hello@alieyajunejaa.com</span>
+        <a href="tel:+918699555967"><Icon name="phone" /> +91 86995 55967</a>
+        <a href="mailto:Alieyajunejaa@gmail.com"><Icon name="mail" /> Alieyajunejaa@gmail.com</a>
       </div>
       <div className="socials" aria-label="Social links">
-        <span><Icon name="instagram" /></span>
+        <a
+          href="https://www.instagram.com/alieyajunejaa?igsh=a3c4ejM0MDV1OHdp&utm_source=qr"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Alieya Junejaa on Instagram"
+        >
+          <Icon name="instagram" />
+        </a>
         <span><Icon name="facebook" /></span>
         <span><Icon name="pinterest" /></span>
       </div>
@@ -53,6 +60,8 @@ export function Header() {
 }
 
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="site-footer">
       <Brand small />
@@ -63,7 +72,15 @@ export function Footer() {
           </Link>
         ))}
       </nav>
-      <p>© 2024 Alieya Junejaa. All Rights Reserved.</p>
+      <div className="footer-legal">
+        <p>© {currentYear} Alieya Junejaa. All Rights Reserved.</p>
+        <p>
+          Powered by{" "}
+          <a href="https://geniusoffice.com/" target="_blank" rel="noreferrer">
+            genius office
+          </a>
+        </p>
+      </div>
       <span className="footer-moon" aria-hidden="true">
         <Icon name="moon" />
       </span>

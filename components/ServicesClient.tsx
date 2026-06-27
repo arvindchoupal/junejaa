@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { alieyaApiRoutes, extractList, postAlieyaApi } from "@/lib/alieyaApi";
-import { mapService, type PublicService } from "@/lib/liveData";
+import { isActiveRow, mapService, type PublicService } from "@/lib/liveData";
 
 export function ServicesClient() {
   const [services, setServices] = useState<PublicService[]>([]);
@@ -20,7 +20,7 @@ export function ServicesClient() {
       try {
         const data = await postAlieyaApi(alieyaApiRoutes.service.list, {});
         const rows = extractList(data);
-        const mapped = rows.map(mapService).filter((item) => item.name);
+        const mapped = rows.filter(isActiveRow).map(mapService).filter((item) => item.name);
         if (isMounted) setServices(mapped);
       } catch (err) {
         if (isMounted) {

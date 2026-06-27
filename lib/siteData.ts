@@ -5,7 +5,6 @@ export const navItems = [
   { label: "Packages", href: "/packages" },
   { label: "Testimonials", href: "/testimonials" },
   { label: "Booking", href: "/booking" },
-  { label: "Admin", href: "/admin" },
 ];
 
 export const proofPoints = [

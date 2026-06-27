@@ -4,7 +4,7 @@ import { Icon } from "@/components/Icon";
 import { SiteFrame } from "@/components/SiteChrome";
 import { getLivePackages, getLiveServices } from "@/lib/liveData";
 import { proofPoints, testimonials } from "@/lib/siteData";
-
+import heroImg from './heroimg2.png'
 export default async function Home() {
   const [services, packages] = await Promise.all([getLiveServices(), getLivePackages()]);
   const featuredServices = services.slice(1, 5);
@@ -39,13 +39,9 @@ export default async function Home() {
         </div>
         <div className="hero-art" aria-label="Meditating spiritual guide illustration">
           <Image
-            src="/heroimg.png"
+            src={heroImg}
             alt="Illustration of a meditating spiritual guide surrounded by moon, stars, and leaves"
             fill
-            style={{
-              marginLeft:50
-            }}
-            className=""
             sizes="(max-width: 900px) 88vw, 48vw"
             priority
           />

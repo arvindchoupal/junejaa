@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { alieyaApiRoutes, extractList, postAlieyaApi } from "@/lib/alieyaApi";
-import { mapPackage, type PublicPackage } from "@/lib/liveData";
+import { isActiveRow, mapPackage, type PublicPackage } from "@/lib/liveData";
 
 export function PackagesClient() {
   const [packages, setPackages] = useState<PublicPackage[]>([]);
@@ -19,7 +19,7 @@ export function PackagesClient() {
       try {
         const data = await postAlieyaApi(alieyaApiRoutes.package.list, {});
         const rows = extractList(data);
-        const mapped = rows.map(mapPackage).filter((item) => item.name);
+        const mapped = rows.filter(isActiveRow).map(mapPackage).filter((item) => item.name);
         if (isMounted) setPackages(mapped);
       } catch (err) {
         if (isMounted) {

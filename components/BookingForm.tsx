@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { alieyaApiRoutes, extractList, postAlieyaApi } from "@/lib/alieyaApi";
-import { mapPackage, mapService, type PublicPackage, type PublicService } from "@/lib/liveData";
+import { isActiveRow, mapPackage, mapService, type PublicPackage, type PublicService } from "@/lib/liveData";
 
 type BookingState = {
   booking_type: "service" | "package";
@@ -68,30 +68,28 @@ export function BookingForm({
 
         if (!isMounted) return;
 
-        const liveServices = extractList(serviceData).map(mapService);
-        const livePackages = extractList(packageData).map(mapPackage);
+        const liveServices = extractList(serviceData).filter(isActiveRow).map(mapService);
+        const livePackages = extractList(packageData).filter(isActiveRow).map(mapPackage);
 
-        if (liveServices.length) {
-          setServices(liveServices);
-          setForm((current) => ({
-            ...current,
-            service_id:
-              current.booking_type === "service" && !current.service_id
-                ? String(liveServices[0].id)
-                : current.service_id,
-          }));
-        }
+        setServices(liveServices);
+        setForm((current) => ({
+          ...current,
+          service_id:
+            current.booking_type === "service" &&
+            !liveServices.some((item) => String(item.id) === current.service_id)
+              ? String(liveServices[0]?.id ?? "")
+              : current.service_id,
+        }));
 
-        if (livePackages.length) {
-          setPackages(livePackages);
-          setForm((current) => ({
-            ...current,
-            package_id:
-              current.booking_type === "package" && !current.package_id
-                ? String(livePackages[0].id)
-                : current.package_id,
-          }));
-        }
+        setPackages(livePackages);
+        setForm((current) => ({
+          ...current,
+          package_id:
+            current.booking_type === "package" &&
+            !livePackages.some((item) => String(item.id) === current.package_id)
+              ? String(livePackages[0]?.id ?? "")
+              : current.package_id,
+        }));
       } catch (error) {
         if (isMounted) {
           setStatus(error instanceof Error ? error.message : "Unable to load services and packages.");

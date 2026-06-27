@@ -44,6 +44,16 @@ function number(value: unknown, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+export function isActiveRow(row: Record<string, unknown>) {
+  const status = row.status ?? row.is_active ?? row.isActive;
+
+  if (status === undefined || status === null || status === "") return true;
+  if (typeof status === "boolean") return status;
+  if (typeof status === "number") return status === 1;
+
+  return ["active", "1", "true", "enabled"].includes(String(status).trim().toLowerCase());
+}
+
 function inferCategory(name: string) {
   const lower = name.toLowerCase();
   if (lower.includes("tarot")) return "Tarot";
@@ -94,7 +104,7 @@ export async function getLiveServices(): Promise<PublicService[]> {
   try {
     const data = await postAlieyaApiServer(alieyaApiRoutes.service.list, {});
     const rows = extractList(data);
-    if (rows.length) return rows.map(mapService).filter((item) => item.name);
+    if (rows.length) return rows.filter(isActiveRow).map(mapService).filter((item) => item.name);
   } catch {
   }
 
@@ -105,7 +115,7 @@ export async function getLivePackages(): Promise<PublicPackage[]> {
   try {
     const data = await postAlieyaApiServer(alieyaApiRoutes.package.list, {});
     const rows = extractList(data);
-    if (rows.length) return rows.map(mapPackage).filter((item) => item.name);
+    if (rows.length) return rows.filter(isActiveRow).map(mapPackage).filter((item) => item.name);
   } catch {
   }
 

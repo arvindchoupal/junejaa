@@ -92,13 +92,26 @@ input {
   text-transform: uppercase;
 }
 
-.socials span {
+.socials span,
+.socials a {
   align-items: center;
   color: #6a604c;
   display: inline-grid;
   height: 18px;
   place-items: center;
   width: 18px;
+}
+
+.top-contact a {
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  gap: 7px;
+}
+
+.top-contact a:hover,
+.socials a:hover {
+  color: var(--gold);
 }
 
 .main-header {
@@ -142,12 +155,15 @@ input {
 }
 
 .brand em {
-  color: #796b55;
+  color: #5f553f;
   display: block;
-  font-family: "Brush Script MT", "Segoe Script", cursive;
-  font-size: 10px;
-  line-height: 1.2;
-  margin-top: 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.35;
+  margin-top: 6px;
+  white-space: nowrap;
 }
 
 .nav-links,
@@ -277,15 +293,16 @@ input {
 }
 
 .hero-art {
-  aspect-ratio: 1.55 / 1;
-  min-height: 435px;
+  aspect-ratio: 1;
+  justify-self: center;
+  max-width: 620px;
   position: relative;
+  width: 100%;
 }
 
 .hero-art img {
-  object-fit: cover;
-  object-position: 50% 35%;
-  transform: scale(1.16);
+  object-fit: contain;
+  object-position: center;
 }
 
 .services-section {
@@ -645,7 +662,7 @@ h2 {
 }
 
 .footer-brand em {
-  font-size: 7px;
+  font-size: 10px;
 }
 
 .site-footer nav {
@@ -656,11 +673,24 @@ h2 {
   font-size: 10px;
 }
 
+.footer-legal {
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+}
+
 .site-footer p {
   color: #363027;
   font-size: 12px;
   margin: 0;
   text-align: center;
+}
+
+.footer-legal a {
+  color: var(--olive);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .footer-moon {
@@ -1186,7 +1216,7 @@ h2 {
   }
 
   .hero-art {
-    min-height: 380px;
+    max-width: 560px;
   }
 
   .service-grid {
