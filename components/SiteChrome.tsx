@@ -76,7 +76,7 @@ export function Footer() {
         <p>© {currentYear} Alieya Junejaa. All Rights Reserved.</p>
         <p>
           Powered by{" "}
-          <a href="https://geniusoffice.com/" target="_blank" rel="noreferrer">
+          <a  style={{ textDecoration: "none" }} href="https://geniusoffice.com/" target="_blank" rel="noreferrer">
             genius office
           </a>
         </p>
