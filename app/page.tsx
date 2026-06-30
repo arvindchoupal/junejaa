@@ -90,12 +90,12 @@ export default async function Home() {
           </p>
           <p>
             With 5+ years of professional experience and 11,000+ clients guided
-            worldwide, Alieya helps individuals gain clarity, direction, and
+            worldwide, I help individuals gain clarity, direction, and
             deeper understanding through Tarot, Astrology, Numerology, and
             Spiritual Guidance.
           </p>
           <p>
-            Her background in Psychology allows each session to combine
+            My background in Psychology allows each session to combine
             intuitive insight with emotional understanding, self-awareness, and
             practical guidance.
           </p>
@@ -107,10 +107,13 @@ export default async function Home() {
         </div>
         <div className="portrait-card">
           <Image
-            src="/alieya-portrait.png"
+            src="/alieya-logo.png"
             alt="Portrait of Alieya Junejaa holding a mug"
             fill
-            sizes="(max-width: 800px) 82vw, 22vw"
+            style={{
+              marginTop:20
+            }}
+            sizes="(max-width: 800px) 80vw, 22vw"
           />
         </div>
       </section>

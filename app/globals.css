@@ -653,7 +653,8 @@ h2 {
 
 .site-footer {
   align-items: center;
-  background: #fffdf8;
+  background: #f0e7d8;
+  border-top: 1px solid var(--line);
   display: grid;
   gap: 20px;
   grid-template-columns: 250px 1fr 280px 56px;
@@ -897,6 +898,10 @@ h2 {
 .admin-form textarea {
   min-height: 96px;
   resize: vertical;
+}
+
+.booking-form input[type="date"] {
+  border-radius: 2px;
 }
 
 .form-footer {
@@ -1160,7 +1165,7 @@ h2 {
 .calendar-day {
   align-items: flex-start;
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px solid #eee7da;
   border-radius: 6px;
   color: #302c25;
   cursor: pointer;
