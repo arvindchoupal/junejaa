@@ -9,19 +9,7 @@ export function TopStrip() {
       <p>✦ Guided by Soul. Rooted in Truth. ✦</p>
       <div className="top-contact">
         <a href="tel:+918699555967"><Icon name="phone" /> +91 86995 55967</a>
-        <a href="mailto:Alieyajunejaa@gmail.com"><Icon name="mail" /> Alieyajunejaa@gmail.com</a>
-      </div>
-      <div className="socials" aria-label="Social links">
-        <a
-          href="https://www.instagram.com/alieyajunejaa?igsh=a3c4ejM0MDV1OHdp&utm_source=qr"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Alieya Junejaa on Instagram"
-        >
-          <Icon name="instagram" />
-        </a>
-        <span><Icon name="facebook" /></span>
-        <span><Icon name="pinterest" /></span>
+        <a href="mailto:alieyajunejaa@gmail.com"><Icon name="mail" /> alieyajunejaa@gmail.com</a>
       </div>
     </section>
   );
@@ -31,7 +19,7 @@ export function Brand({ small = false }: { small?: boolean }) {
   return (
     <Link className={`brand${small ? " footer-brand" : ""}`} href="/" aria-label="Alieya Junejaa home">
       <span className="brand-mark">
-        <Image src="/logo.png" alt="" fill sizes={small ? "44px" : "68px"} priority={!small} />
+        <Image src="/alieya-logo.png" alt="" fill sizes={small ? "64px" : "104px"} priority={!small} />
       </span>
       <span>
         <strong>ALIEYA JUNEJAA</strong>

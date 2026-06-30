@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { alieyaApiRoutes, postAlieyaApi } from "@/lib/alieyaApi";
+import { alieyaApiRoutes, extractList, postAlieyaApi } from "@/lib/alieyaApi";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 type Field = {
   name: string;
@@ -166,12 +167,15 @@ function toPayload(form: Record<string, string>, id?: number) {
 
 export function AdminPanel() {
   const router = useRouter();
-  const [activeKey, setActiveKey] = useState("services");
+  const [activeKey, setActiveKey] = useState("dashboard");
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [form, setForm] = useState<Record<string, string>>(masters[0].initial);
   const [editingId, setEditingId] = useState<number | undefined>();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [calendarBookings, setCalendarBookings] = useState<Record<string, unknown>[]>([]);
+  const [calendarLoading, setCalendarLoading] = useState(false);
+  const [calendarError, setCalendarError] = useState("");
 
   const activeMaster = useMemo(
     () => masters.find((master) => master.key === activeKey) ?? masters[0],
@@ -213,6 +217,24 @@ export function AdminPanel() {
       setLoading(false);
     }
   }, [activeMaster]);
+
+  const loadCalendarBookings = useCallback(async () => {
+    setCalendarLoading(true);
+    setCalendarError("");
+    try {
+      const data = await postAlieyaApi(alieyaApiRoutes.booking.list, {});
+      setCalendarBookings(extractList(data));
+    } catch (error) {
+      setCalendarError(error instanceof Error ? error.message : "Unable to load booking calendar.");
+    } finally {
+      setCalendarLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadCalendarBookings(), 0);
+    return () => window.clearTimeout(timer);
+  }, [loadCalendarBookings]);
 
   function selectMaster(master: Master) {
     setActiveKey(master.key);
@@ -267,6 +289,9 @@ export function AdminPanel() {
     <section className="admin-shell">
       <aside className="admin-sidebar">
         <h2>Admin</h2>
+        <button className={activeKey === "dashboard" ? "active" : ""} onClick={() => { setActiveKey("dashboard"); setMessage(""); }}>
+          Dashboard
+        </button>
         {masters.map((master) => (
           <button className={master.key === activeKey ? "active" : ""} key={master.key} onClick={() => selectMaster(master)}>
             {master.label}
@@ -274,6 +299,25 @@ export function AdminPanel() {
         ))}
       </aside>
       <div className="admin-workspace">
+        {activeKey === "dashboard" ? (
+          <>
+            <div className="admin-title">
+              <div>
+                <p className="eyebrow">Overview</p>
+                <h1>Booking Calendar</h1>
+              </div>
+              <div className="admin-title-actions">
+                <button className="outline-button" onClick={() => loadCalendarBookings()} disabled={calendarLoading}>
+                  {calendarLoading ? "Refreshing..." : "Refresh"}
+                </button>
+                <button className="outline-button" onClick={() => { localStorage.clear(); router.push("/admin/login"); }}>Logout</button>
+              </div>
+            </div>
+            {calendarError ? <p className="form-status">{calendarError}</p> : null}
+            <BookingCalendar bookings={calendarBookings} />
+          </>
+        ) : (
+        <>
         <div className="admin-title">
           <div>
             <p className="eyebrow">Master</p>
@@ -341,6 +385,8 @@ export function AdminPanel() {
             </tbody>
           </table>
         </div>
+        </>
+        )}
       </div>
     </section>
   );

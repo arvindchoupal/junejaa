@@ -13,7 +13,7 @@ export default async function Home() {
     <SiteFrame>
       <section className="hero-section">
         <div className="hero-copy">
-          <p className="eyebrow">Oracle x Awakened Path</p>
+          <p className="eyebrow hero-eyebrow">Alchemist Oracle x Awakened Path</p>
           <h1>
             Find Clarity, Healing
             <br />
