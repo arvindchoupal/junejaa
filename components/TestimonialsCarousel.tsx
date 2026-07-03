@@ -14,7 +14,7 @@ export function TestimonialsCarousel({ testimonials }: { testimonials: PublicTes
   }
 
   return (
-    <section className="kind-words" aria-label="Client testimonials">
+    <section className="kind-words" id="testimonials" aria-label="Client testimonials">
       <span className="botanical left" aria-hidden="true"><Icon name="leaf" /></span>
       <span className="botanical right" aria-hidden="true"><Icon name="leaf" /></span>
       <h2>Kind Words From Clients Around The World</h2>
