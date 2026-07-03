@@ -13,6 +13,15 @@ export const proofPoints = [
   { icon: "shield", label: "Confidential Space" },
 ];
 
+// Compatibility for stale deployment artifacts that still import the former
+// dedicated testimonials page. Live testimonials come from the API.
+export const testimonials: Array<{
+  clientName: string;
+  clientCountry: string;
+  rating: number;
+  testimonial: string;
+}> = [];
+
 
 
 
