@@ -10,6 +10,9 @@ export function TopStrip() {
       <div className="top-contact">
         <a href="tel:+918699555967"><Icon name="phone" /> +91 86995 55967</a>
         <a href="mailto:alieyajunejaa@gmail.com"><Icon name="mail" /> alieyajunejaa@gmail.com</a>
+        <a href="https://www.instagram.com/alieyajunejaa?igsh=a3c4ejM0MDV1OHdp&utm_source=qr" target="_blank" rel="noreferrer" aria-label="Alieya Junejaa on Instagram">
+          <Icon name="instagram" /> Instagram
+        </a>
       </div>
     </section>
   );

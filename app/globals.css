@@ -528,12 +528,12 @@ h2 {
   top: 112px;
 }
 
-.kind-words button:first-of-type {
-  left: 31%;
+.testimonial-previous {
+  left: 25%;
 }
 
-.kind-words button:last-of-type {
-  right: 23%;
+.testimonial-next {
+  right: 25%;
 }
 
 .kind-words blockquote {
@@ -1446,11 +1446,11 @@ h2 {
     margin-bottom: 32px;
   }
 
-  .kind-words button:first-of-type {
+  .testimonial-previous {
     left: 8%;
   }
 
-  .kind-words button:last-of-type {
+  .testimonial-next {
     right: 8%;
   }
 
@@ -1585,8 +1585,33 @@ h2 {
     width: 16px;
   }
 
+  .kind-words {
+    padding-bottom: 36px;
+    padding-top: 42px;
+  }
+
   .kind-words button {
-    display: none;
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    font-size: 28px;
+    height: 38px;
+    top: auto;
+    width: 38px;
+  }
+
+  .testimonial-previous {
+    bottom: 28px;
+    left: calc(50% - 52px);
+  }
+
+  .testimonial-next {
+    bottom: 28px;
+    right: calc(50% - 52px);
+  }
+
+  .kind-words p {
+    margin-bottom: 48px;
   }
 
   .subscribe-section {

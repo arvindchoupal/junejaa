@@ -21,6 +21,15 @@ export type PublicPackage = {
   description: string;
 };
 
+export type PublicTestimonial = {
+  id: number;
+  clientName: string;
+  clientCountry: string;
+  rating: number;
+  testimonial: string;
+  displayOrder: number;
+};
+
 const serviceIconMap: Record<string, string> = {
   tarot: "crystal",
   astrology: "sun",
@@ -100,6 +109,17 @@ export function mapPackage(row: Record<string, unknown>, index = 0): PublicPacka
   };
 }
 
+export function mapTestimonial(row: Record<string, unknown>, index = 0): PublicTestimonial {
+  return {
+    id: number(row.id, index + 1),
+    clientName: text(row.client_name ?? row.clientName, "Client"),
+    clientCountry: text(row.client_country ?? row.clientCountry, ""),
+    rating: Math.min(5, Math.max(1, number(row.rating, 5))),
+    testimonial: text(row.testimonial, ""),
+    displayOrder: number(row.display_order ?? row.displayOrder, index + 1),
+  };
+}
+
 export async function getLiveServices(): Promise<PublicService[]> {
   try {
     const data = await postAlieyaApiServer(alieyaApiRoutes.service.list, {});
@@ -120,4 +140,18 @@ export async function getLivePackages(): Promise<PublicPackage[]> {
   }
 
   return [];
+}
+
+export async function getLiveTestimonials(): Promise<PublicTestimonial[]> {
+  try {
+    const data = await postAlieyaApiServer(alieyaApiRoutes.testimonial.list, {});
+    const rows = extractList(data);
+    return rows
+      .filter(isActiveRow)
+      .map(mapTestimonial)
+      .filter((item) => item.testimonial)
+      .sort((a, b) => a.displayOrder - b.displayOrder);
+  } catch {
+    return [];
+  }
 }

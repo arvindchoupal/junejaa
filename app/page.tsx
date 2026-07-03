@@ -2,11 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { SiteFrame } from "@/components/SiteChrome";
-import { getLivePackages, getLiveServices } from "@/lib/liveData";
-import { proofPoints, testimonials } from "@/lib/siteData";
+import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
+import { getLivePackages, getLiveServices, getLiveTestimonials } from "@/lib/liveData";
+import { proofPoints } from "@/lib/siteData";
 import heroImg from './heroimg2.png'
 export default async function Home() {
-  const [services, packages] = await Promise.all([getLiveServices(), getLivePackages()]);
+  const [services, packages, testimonials] = await Promise.all([
+    getLiveServices(),
+    getLivePackages(),
+    getLiveTestimonials(),
+  ]);
   const featuredServices = services.slice(1, 5);
 
   return (
@@ -118,21 +123,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="kind-words">
-        <span className="botanical left" aria-hidden="true"><Icon name="leaf" /></span>
-        <span className="botanical right" aria-hidden="true"><Icon name="leaf" /></span>
-        <h2>Kind Words From Clients Around The World</h2>
-        <div className="divider">✦</div>
-        <button aria-label="Previous testimonial">‹</button>
-        <blockquote>
-          <span>“</span>
-          {testimonials[0].testimonial}
-          <span>”</span>
-        </blockquote>
-        <div className="stars">★★★★★</div>
-        <p>– {testimonials[0].clientName}</p>
-        <button aria-label="Next testimonial">›</button>
-      </section>
+      {testimonials.length ? <TestimonialsCarousel testimonials={testimonials} /> : null}
 
       <section className="subscribe-section">
         <div className="subscribe-copy">

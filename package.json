@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "migrate": "node scripts/seedAlieyaData.mjs",
     "start": "next start",
     "lint": "eslint"
   },
