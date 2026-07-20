@@ -789,6 +789,25 @@ h2 {
   margin: 0 0 14px;
 }
 
+.catalog-card .description-toggle {
+  align-self: flex-start;
+  background: transparent;
+  border: 0;
+  color: #7b3426;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  margin: -4px 0 14px;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.catalog-card .description-toggle:hover {
+  color: #4f2018;
+}
+
 .catalog-card strong {
   color: var(--gold);
   display: block;
@@ -1047,6 +1066,33 @@ h2 {
   color: #51493f;
   line-height: 1.55;
   margin: 10px 0 18px;
+}
+
+.delete-dialog strong {
+  color: #2f2a24;
+}
+
+.delete-dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.danger-button {
+  background: #8f3328;
+  border: 1px solid #8f3328;
+  border-radius: 999px;
+  color: #fffdf8;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 11px 18px;
+}
+
+.danger-button:disabled,
+.delete-dialog-actions button:disabled {
+  cursor: wait;
+  opacity: 0.62;
 }
 
 .admin-shell {
@@ -1625,4 +1671,315 @@ h2 {
   .subscribe-form {
     grid-template-columns: 1fr;
   }
+}
+
+/* Daily tarot guidance */
+.daily-ritual {
+  background:
+    radial-gradient(circle at 50% 34%, rgba(181, 151, 65, 0.18), transparent 19rem),
+    linear-gradient(180deg, #f7f1e5 0%, #fbf8f1 100%);
+  min-height: 720px;
+  overflow: hidden;
+  padding: 72px 24px 78px;
+  position: relative;
+  text-align: center;
+}
+
+.daily-ritual::before,
+.daily-ritual::after {
+  color: rgba(92, 93, 55, 0.12);
+  content: "☾";
+  font-family: Georgia, serif;
+  font-size: 190px;
+  position: absolute;
+  top: 130px;
+}
+
+.daily-ritual::before { left: -42px; transform: rotate(-25deg); }
+.daily-ritual::after { right: -42px; transform: rotate(25deg) scaleX(-1); }
+
+.daily-intro {
+  margin: 0 auto;
+  max-width: 730px;
+  position: relative;
+  z-index: 1;
+}
+
+.daily-intro .eyebrow { margin-bottom: 18px; }
+
+.daily-intro h1 {
+  color: #29271c;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(44px, 5.5vw, 68px);
+  font-weight: 400;
+  line-height: 1.05;
+  margin: 0 0 22px;
+}
+
+.daily-intro > p {
+  color: #5a5144;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.ritual-divider {
+  align-items: center;
+  color: var(--gold);
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin: 24px auto 18px;
+  width: min(300px, 70vw);
+}
+
+.ritual-divider::before,
+.ritual-divider::after { background: var(--line); content: ""; height: 1px; flex: 1; }
+.daily-intro .daily-breathe { font-size: 15px; line-height: 1.55; }
+
+.tarot-stage {
+  height: 268px;
+  margin: 34px auto 14px;
+  perspective: 1000px;
+  position: relative;
+  width: 190px;
+}
+
+.tarot-card-back,
+.card-shadow,
+.revealed-card {
+  background:
+    radial-gradient(circle at center, transparent 0 36px, rgba(211, 180, 94, 0.45) 37px 38px, transparent 39px),
+    linear-gradient(145deg, #545632, #34351e);
+  border: 7px solid #f0e2ba;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px #a98c3c, 0 20px 42px rgba(48, 42, 29, 0.22);
+  color: #ead79d;
+  height: 268px;
+  position: absolute;
+  width: 176px;
+}
+
+.tarot-card-back { display: grid; inset: 0 7px; place-items: center; z-index: 3; }
+.tarot-card-back::before { border: 1px solid rgba(234, 215, 157, 0.7); border-radius: 4px; content: ""; inset: 7px; position: absolute; }
+.card-shadow { opacity: 0.45; top: 8px; z-index: 1; }
+.card-shadow-left { left: -20px; transform: rotate(-8deg); }
+.card-shadow-right { right: -20px; transform: rotate(8deg); }
+.card-corner { font-size: 15px; left: 18px; position: absolute; top: 16px; }
+.card-corner-bottom { bottom: 16px; left: auto; right: 18px; top: auto; }
+.card-moon { font-family: Georgia, serif; font-size: 78px; line-height: 1; transform: rotate(-20deg); }
+.card-star-field { font-size: 11px; letter-spacing: 5px; position: absolute; top: 78px; }
+.card-brand { bottom: 42px; font-family: Georgia, serif; font-size: 10px; letter-spacing: 4px; position: absolute; }
+
+.tarot-stage.is-drawing .tarot-card-back { animation: tarot-shuffle-center 0.45s ease-in-out infinite alternate; }
+.tarot-stage.is-drawing .card-shadow-left { animation: tarot-shuffle-left 0.42s ease-in-out infinite alternate; }
+.tarot-stage.is-drawing .card-shadow-right { animation: tarot-shuffle-right 0.38s ease-in-out infinite alternate-reverse; }
+
+@keyframes tarot-shuffle-center { to { transform: translateY(-13px) rotate(2deg); } }
+@keyframes tarot-shuffle-left { to { transform: translateX(-26px) rotate(-14deg); } }
+@keyframes tarot-shuffle-right { to { transform: translateX(26px) rotate(14deg); } }
+
+.draw-status { color: #6a604f; font-size: 13px; min-height: 20px; }
+.draw-card-button { border: 0; cursor: pointer; margin-top: 9px; min-width: 220px; }
+.draw-card-button:disabled { cursor: default; opacity: 0.7; }
+.return-note { color: #817663; font-size: 12px; margin: 14px 0 0; }
+
+.card-reading {
+  align-items: start;
+  background: #fffdf8;
+  display: grid;
+  gap: clamp(50px, 7vw, 100px);
+  grid-template-columns: minmax(230px, 0.34fr) minmax(0, 0.66fr);
+  padding: 90px max(6vw, 40px) 110px;
+  scroll-margin-top: 20px;
+}
+
+.revealed-card {
+  align-items: center;
+  aspect-ratio: 0.65;
+  background:
+    radial-gradient(circle at 50% 39%, rgba(244, 224, 165, 0.13), transparent 34%),
+    linear-gradient(155deg, #4d4f2d, #292a18);
+  display: flex;
+  height: auto;
+  justify-content: center;
+  max-width: 330px;
+  position: sticky;
+  top: 28px;
+  width: 100%;
+}
+
+.revealed-card::before { border: 1px solid rgba(234, 215, 157, 0.7); border-radius: 4px; content: ""; inset: 12px; position: absolute; }
+.revealed-card strong { bottom: 12%; font-family: Georgia, serif; font-size: clamp(22px, 3vw, 32px); font-weight: 400; left: 18px; position: absolute; right: 18px; text-align: center; }
+.revealed-number { font-size: 10px; left: 24px; letter-spacing: 2px; position: absolute; text-transform: uppercase; top: 24px; }
+.revealed-moon { font-family: Georgia, serif; font-size: 120px; line-height: 1; transform: rotate(-20deg); }
+.revealed-stars { letter-spacing: 8px; position: absolute; top: 30%; }
+
+.reading-copy { max-width: 850px; }
+.reading-copy > .eyebrow { margin-bottom: 14px; }
+.reading-copy > h2 { color: var(--gold); font-family: Georgia, serif; font-size: clamp(42px, 5vw, 62px); font-weight: 400; margin: 0 0 16px; }
+.reading-lead { color: #6c6254; font-family: Georgia, serif; font-size: 17px; line-height: 1.65; margin: 0 0 38px; max-width: 670px; }
+.guidance-grid { display: grid; gap: 0; }
+.guidance-grid article { align-items: flex-start; border-top: 1px solid var(--line); display: grid; gap: 18px; grid-template-columns: 34px 1fr; padding: 26px 0; }
+.guidance-grid article > span { color: var(--gold); font-family: Georgia, serif; font-size: 25px; line-height: 1; text-align: center; }
+.guidance-grid h3, .journal-prompt h3 { font-family: Georgia, serif; font-size: 22px; font-weight: 400; margin: 0 0 9px; }
+.guidance-grid p, .daily-advice > p:last-child, .journal-prompt p { color: #574f44; font-size: 15px; line-height: 1.72; margin: 0; }
+
+.daily-advice { border-bottom: 1px solid var(--line); border-top: 1px solid var(--line); padding: 28px 0; }
+.daily-advice .eyebrow { margin-bottom: 10px; }
+.affirmation-card { background: #f1eadb; border-left: 3px solid var(--gold); margin: 34px 0; padding: 28px 34px; position: relative; }
+.affirmation-card > span { color: var(--gold); position: absolute; right: 24px; top: 18px; }
+.affirmation-card .eyebrow { margin-bottom: 12px; }
+.affirmation-card blockquote { color: #45462a; font-family: Georgia, serif; font-size: 24px; font-style: italic; line-height: 1.5; margin: 0; }
+.journal-prompt { align-items: flex-start; background: var(--soft); display: grid; gap: 18px; grid-template-columns: 36px 1fr; padding: 26px; }
+.journal-prompt > span { color: var(--gold); font-size: 28px; }
+
+@media (max-width: 900px) {
+  .card-reading { gap: 45px; grid-template-columns: 220px 1fr; padding-left: 32px; padding-right: 32px; }
+  .daily-ritual::before, .daily-ritual::after { display: none; }
+}
+
+@media (max-width: 680px) {
+  .daily-ritual { min-height: 680px; padding: 54px 20px 62px; }
+  .daily-intro h1 { font-size: 44px; }
+  .daily-intro > p { font-size: 16px; }
+  .tarot-stage { margin-top: 28px; transform: scale(0.9); transform-origin: top center; margin-bottom: -12px; }
+  .card-reading { grid-template-columns: 1fr; padding: 58px 20px 72px; }
+  .revealed-card { margin: 0 auto; max-width: 250px; position: relative; top: 0; }
+  .reading-copy > .eyebrow, .reading-copy > h2, .reading-lead { text-align: center; }
+  .affirmation-card { padding: 26px 24px; }
+  .affirmation-card blockquote { font-size: 21px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarot-stage.is-drawing .tarot-card-back,
+  .tarot-stage.is-drawing .card-shadow-left,
+  .tarot-stage.is-drawing .card-shadow-right { animation-duration: 1.2s; }
+}
+
+/* Video-matched cosmic daily draw */
+.cosmic-draw {
+  background:
+    radial-gradient(ellipse at 50% 115%, rgba(52, 36, 128, 0.7), transparent 55%),
+    linear-gradient(180deg, #08111d 0%, #0b1226 48%, #101137 100%);
+  color: #f6f1e7;
+  min-height: 720px;
+  overflow: hidden;
+  padding: 38px clamp(24px, 6vw, 92px) 60px;
+  position: relative;
+}
+
+.cosmic-stars,
+.cosmic-stars::before,
+.cosmic-stars::after {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.92) 0 1px, transparent 1.4px),
+    radial-gradient(circle, rgba(189,202,255,.72) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(255,228,169,.65) 0 .8px, transparent 1.2px);
+  background-position: 9px 13px, 31px 47px, 71px 22px;
+  background-size: 83px 79px, 113px 109px, 151px 137px;
+  content: "";
+  inset: 0;
+  opacity: .7;
+  pointer-events: none;
+  position: absolute;
+}
+
+.cosmic-stars::before { filter: blur(.35px); opacity: .35; transform: scale(1.25) rotate(7deg); }
+.cosmic-stars::after { filter: blur(.65px); opacity: .22; transform: scale(1.5) rotate(-5deg); }
+
+.cosmic-heading { position: relative; text-align: center; z-index: 1; }
+.cosmic-heading > p { color: #c8a955; font-size: 9px; font-weight: 700; letter-spacing: 5px; margin: 0 0 8px; text-transform: uppercase; }
+.cosmic-heading h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(46px, 5.2vw, 72px); font-weight: 400; line-height: 1; margin: 0 0 13px; text-shadow: 0 0 30px rgba(255,255,255,.12); }
+.cosmic-heading > span { color: #d1c5f0; font-size: 15px; font-weight: 500; line-height: 1.5; }
+
+.oracle-opening {
+  align-items: center;
+  border: 1px solid rgba(217, 197, 149, .32);
+  display: flex;
+  flex-direction: column;
+  margin: 112px auto 0;
+  max-width: 620px;
+  padding: 34px 55px 30px;
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+.oracle-opening blockquote, .consulting-quote blockquote { font-family: Georgia, serif; font-size: 17px; font-style: italic; line-height: 1.7; margin: 0 0 16px; }
+.oracle-opening strong, .consulting-quote strong { color: #d4b55e; font-size: 9px; letter-spacing: 1.7px; }
+.oracle-opening button { background: transparent; border: 0; border-bottom: 1px solid #d6b655; color: #f7f0d9; cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; margin-top: 36px; padding: 0 0 6px; text-transform: uppercase; }
+
+.cosmic-result {
+  align-items: center;
+  display: grid;
+  gap: clamp(55px, 8vw, 115px);
+  grid-template-columns: 230px minmax(0, 650px);
+  justify-content: center;
+  margin: 62px auto 0;
+  max-width: 1050px;
+  position: relative;
+  z-index: 1;
+}
+.cosmic-card-column { text-align: center; }
+.cosmic-card {
+  background: linear-gradient(180deg, #07152c, #10205a 64%, #492875);
+  border: 1px solid rgba(225, 200, 137, .82);
+  box-shadow: 8px 9px 0 rgba(67, 51, 132, .25), inset 0 0 0 7px rgba(8, 12, 39, .45);
+  height: 365px;
+  overflow: hidden;
+  position: relative;
+  width: 230px;
+}
+.cosmic-card::before { border: 1px solid rgba(205, 186, 151, .32); content: ""; inset: 7px; position: absolute; z-index: 3; }
+.card-tone-0 { background: linear-gradient(180deg, #07152b, #172760 62%, #704176); }
+.card-tone-1 { background: linear-gradient(180deg, #061529, #182e68 60%, #844b83); }
+.card-tone-2 { background: linear-gradient(180deg, #091632, #163052 62%, #3b456a); }
+.card-tone-3 { background: linear-gradient(180deg, #11152e, #34245f 60%, #80508d); }
+.card-sky { align-items: center; color: #d8c27a; display: flex; flex-direction: column; inset: 20px 0 auto; position: absolute; }
+.card-sky span:first-child { font-size: 15px; }
+.card-sky i { font-family: Georgia, serif; font-size: 105px; font-style: normal; line-height: 1.05; text-shadow: 0 0 24px rgba(255,222,141,.45); transform: rotate(-20deg); }
+.card-sky span:last-child { font-size: 11px; letter-spacing: 4px; }
+.card-horizon { background: linear-gradient(10deg, #0a1028 48%, transparent 49%), linear-gradient(-12deg, #12183a 48%, transparent 49%); bottom: 0; height: 120px; left: 0; position: absolute; right: 0; }
+.cosmic-card-name { bottom: 18px; display: flex; flex-direction: column; left: 12px; position: absolute; right: 12px; z-index: 2; }
+.cosmic-card-name small { color: #ecd178; font-size: 11px; margin-bottom: 4px; }
+.cosmic-card-name strong { font-family: Georgia, serif; font-size: 19px; font-weight: 400; }
+.draw-another { background: transparent; border: 0; border-bottom: 1px solid #d0ad4c; color: #fff3c8; cursor: pointer; font-size: 11px; font-weight: 800; letter-spacing: 1.2px; margin-top: 18px; padding: 0 0 6px; text-transform: uppercase; }
+.draw-another:disabled { cursor: default; opacity: .65; }
+
+.consulting-copy { align-items: center; display: flex; flex-direction: column; inset: 0; justify-content: center; position: absolute; }
+.consulting-copy b { animation: cosmic-pulse .7s ease-in-out infinite alternate; color: #e2c15e; font-size: 35px; text-shadow: 0 0 22px rgba(231,196,89,.6); }
+.consulting-copy span { font-size: 9px; letter-spacing: 1.6px; margin-top: 15px; text-transform: uppercase; }
+@keyframes cosmic-pulse { to { opacity: .45; transform: scale(.72) rotate(45deg); } }
+.consulting-quote { border: 1px solid rgba(217, 197, 149, .3); padding: 28px 45px; text-align: center; }
+
+.compact-reading { min-width: 0; }
+.compact-reading > p { color: #e2c364; font-size: 12px; font-weight: 800; letter-spacing: 2.1px; line-height: 1.5; margin: 0 0 13px; text-transform: uppercase; }
+.compact-reading h2 { font-family: Georgia, serif; font-size: clamp(36px, 4vw, 54px); font-weight: 400; line-height: 1; margin: 0; }
+.compact-rule { background: #ccb05e; display: block; height: 2px; margin: 18px 0 22px; width: 35px; }
+.compact-reading > strong { color: #fffdf8; display: block; font-size: 18px; line-height: 1.65; max-width: 620px; }
+.keyword-panel { border-top: 1px solid rgba(229, 222, 204, .28); margin-top: 28px; padding-top: 18px; }
+.keyword-panel small { color: #ddd6ea; display: block; font-size: 11px; font-weight: 700; letter-spacing: 1.3px; margin-bottom: 12px; text-transform: uppercase; }
+.keyword-panel div { display: flex; flex-wrap: wrap; gap: 8px; }
+.keyword-panel span { background: rgba(255,255,255,.04); border: 1px solid rgba(232, 226, 243, .65); color: #fff; font-size: 12px; padding: 8px 15px; text-transform: capitalize; }
+
+.card-reading { display: block; padding-left: max(8vw, 30px); padding-right: max(8vw, 30px); }
+.card-reading .reading-copy { margin: 0 auto; }
+
+@media (max-width: 700px) {
+  .cosmic-draw { min-height: 760px; padding: 36px 20px 60px; }
+  .cosmic-heading h1 { font-size: 45px; }
+  .cosmic-heading > span { font-size: 12px; }
+  .oracle-opening { margin-top: 90px; padding: 28px 24px; }
+  .cosmic-result { gap: 38px; grid-template-columns: 1fr; margin-top: 42px; }
+  .cosmic-card-column { margin: 0 auto; }
+  .cosmic-card { height: 330px; width: 208px; }
+  .compact-reading { text-align: center; }
+  .compact-rule { margin-left: auto; margin-right: auto; }
+  .keyword-panel div { justify-content: center; }
+  .consulting-quote { padding: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consulting-copy b { animation-duration: 1.5s; }
 }

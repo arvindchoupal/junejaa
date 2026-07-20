@@ -6,10 +6,13 @@ import { Icon } from "@/components/Icon";
 import { alieyaApiRoutes, extractList, postAlieyaApi } from "@/lib/alieyaApi";
 import { isActiveRow, mapService, type PublicService } from "@/lib/liveData";
 
+const DESCRIPTION_WORD_LIMIT = 32;
+
 export function ServicesClient() {
   const [services, setServices] = useState<PublicService[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [expandedServiceIds, setExpandedServiceIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     let isMounted = true;
@@ -43,6 +46,15 @@ export function ServicesClient() {
     [services],
   );
 
+  function toggleDescription(serviceId: number) {
+    setExpandedServiceIds((current) => {
+      const next = new Set(current);
+      if (next.has(serviceId)) next.delete(serviceId);
+      else next.add(serviceId);
+      return next;
+    });
+  }
+
   if (isLoading) {
     return <p className="catalog-state">Loading services from API...</p>;
   }
@@ -63,19 +75,38 @@ export function ServicesClient() {
           <div className="catalog-grid">
             {services
               .filter((service) => service.category === category)
-              .map((service) => (
+              .map((service) => {
+                const descriptionWords = service.description.trim().split(/\s+/).filter(Boolean);
+                const hasLongDescription = descriptionWords.length > DESCRIPTION_WORD_LIMIT;
+                const isExpanded = expandedServiceIds.has(service.id);
+                const visibleDescription = hasLongDescription && !isExpanded
+                  ? `${descriptionWords.slice(0, DESCRIPTION_WORD_LIMIT).join(" ")}…`
+                  : service.description;
+
+                return (
                 <article className="catalog-card" key={service.id}>
                   <span className="service-icon">
                     <Icon name={service.icon} />
                   </span>
                   <h3>{service.name}</h3>
-                  <p>{service.description}</p>
+                  <p>{visibleDescription}</p>
+                  {hasLongDescription ? (
+                    <button
+                      aria-expanded={isExpanded}
+                      className="description-toggle"
+                      onClick={() => toggleDescription(service.id)}
+                      type="button"
+                    >
+                      {isExpanded ? "Show less" : "Read more"}
+                    </button>
+                  ) : null}
                   <strong>{service.priceLabel}</strong>
                   <Link href={`/booking?type=service&id=${service.id}`}>
                     Book This Reading
                   </Link>
                 </article>
-              ))}
+                );
+              })}
           </div>
         </div>
       ))}

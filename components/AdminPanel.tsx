@@ -27,18 +27,30 @@ type Master = {
 
 const masters: Master[] = [
   {
+    key: "serviceCategories",
+    label: "Service Categories",
+    routes: alieyaApiRoutes.serviceMaster,
+    fields: [
+      { name: "service_category", label: "Service Category" },
+      { name: "display_order", label: "Display Order", type: "number" },
+      { name: "status", label: "Status", type: "select", options: ["active", "inactive"] },
+    ],
+    initial: { service_category: "", display_order: "1", status: "active" },
+  },
+  {
     key: "services",
     label: "Services",
     routes: alieyaApiRoutes.service,
     fields: [
       { name: "service_name", label: "Service Name" },
+      { name: "service_category", label: "Service Category", type: "select" },
       { name: "charges", label: "Charges", type: "number" },
       { name: "description", label: "Description", type: "textarea" },
       { name: "image", label: "Image" },
       { name: "display_order", label: "Display Order", type: "number" },
       { name: "status", label: "Status", type: "select", options: ["active", "inactive"] },
     ],
-    initial: { service_name: "", charges: "", description: "", image: "", display_order: "1", status: "active" },
+    initial: { service_name: "", service_category: "", charges: "", description: "", image: "", display_order: "1", status: "active" },
   },
   {
     key: "packages",
@@ -176,6 +188,9 @@ export function AdminPanel() {
   const [calendarBookings, setCalendarBookings] = useState<Record<string, unknown>[]>([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
   const [calendarError, setCalendarError] = useState("");
+  const [serviceCategories, setServiceCategories] = useState<string[]>([]);
+  const [pendingDelete, setPendingDelete] = useState<Record<string, unknown> | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const activeMaster = useMemo(
     () => masters.find((master) => master.key === activeKey) ?? masters[0],
@@ -209,14 +224,31 @@ export function AdminPanel() {
     setMessage("");
     try {
       const data = await postAlieyaApi(master.routes.list, {});
-      const list = Array.isArray(data) ? data : data?.data ?? data?.list ?? [];
-      setRows(Array.isArray(list) ? list : []);
+      setRows(extractList(data));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to load records.");
     } finally {
       setLoading(false);
     }
   }, [activeMaster]);
+
+  const loadServiceCategories = useCallback(async () => {
+    try {
+      const data = await postAlieyaApi(alieyaApiRoutes.serviceMaster.list, {});
+      const categories = extractList(data)
+        .filter((row) => {
+          const status = String(row.status ?? "active").toLowerCase();
+          return status === "active" || status === "1" || status === "true";
+        })
+        .sort((a, b) => Number(a.display_order ?? 0) - Number(b.display_order ?? 0))
+        .map((row) => String(row.service_category ?? "").trim())
+        .filter(Boolean);
+      setServiceCategories(Array.from(new Set(categories)));
+    } catch (error) {
+      setServiceCategories([]);
+      setMessage(error instanceof Error ? error.message : "Unable to load service categories.");
+    }
+  }, []);
 
   const loadCalendarBookings = useCallback(async () => {
     setCalendarLoading(true);
@@ -236,6 +268,12 @@ export function AdminPanel() {
     return () => window.clearTimeout(timer);
   }, [loadCalendarBookings]);
 
+  useEffect(() => {
+    if (activeKey !== "services") return;
+    const timer = window.setTimeout(() => void loadServiceCategories(), 0);
+    return () => window.clearTimeout(timer);
+  }, [activeKey, loadServiceCategories]);
+
   function selectMaster(master: Master) {
     setActiveKey(master.key);
     setForm(master.initial);
@@ -250,7 +288,13 @@ export function AdminPanel() {
     setLoading(true);
     setMessage("");
     try {
-      await postAlieyaApi(editingId ? activeMaster.routes.update : activeMaster.routes.create, toPayload(form, editingId));
+      const formWithCategory = activeMaster.key === "services" && !form.service_category && serviceCategories[0]
+        ? { ...form, service_category: serviceCategories[0] }
+        : form;
+      await postAlieyaApi(
+        editingId ? activeMaster.routes.update : activeMaster.routes.create,
+        toPayload(formWithCategory, editingId),
+      );
       setMessage(editingId ? "Record updated." : "Record created.");
       setForm(activeMaster.initial);
       setEditingId(undefined);
@@ -262,16 +306,26 @@ export function AdminPanel() {
     }
   }
 
-  async function remove(id: number) {
+  async function remove() {
+    if (!pendingDelete) return;
+    const row = pendingDelete;
+    const rowId = Number(row.id);
     setLoading(true);
+    setDeletingId(rowId);
     setMessage("");
     try {
-      await postAlieyaApi(activeMaster.routes.delete, { id });
+      const payload: Record<string, unknown> = { id: rowId };
+      if (activeMaster.key === "services" && row.service_category != null) {
+        payload.service_category = row.service_category;
+      }
+      await postAlieyaApi(activeMaster.routes.delete, payload);
       setMessage("Record deleted.");
+      setPendingDelete(null);
       await loadRows();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to delete record.");
     } finally {
+      setDeletingId(null);
       setLoading(false);
     }
   }
@@ -344,8 +398,19 @@ export function AdminPanel() {
               {field.type === "textarea" ? (
                 <textarea value={form[field.name] ?? ""} onChange={(event) => setForm({ ...form, [field.name]: event.target.value })} />
               ) : field.type === "select" ? (
-                <select value={form[field.name] ?? ""} onChange={(event) => setForm({ ...form, [field.name]: event.target.value })}>
-                  {field.options?.map((option) => <option key={option} value={option}>{option}</option>)}
+                <select
+                  value={field.name === "service_category" && activeMaster.key === "services"
+                    ? form[field.name] || serviceCategories[0] || ""
+                    : form[field.name] ?? ""}
+                  onChange={(event) => setForm({ ...form, [field.name]: event.target.value })}
+                >
+                  {field.name === "service_category" && activeMaster.key === "services" && !serviceCategories.length ? (
+                    <option value="">No active categories found</option>
+                  ) : null}
+                  {(field.name === "service_category" && activeMaster.key === "services"
+                    ? serviceCategories
+                    : field.options
+                  )?.map((option) => <option key={option} value={option}>{option}</option>)}
                 </select>
               ) : (
                 <input type={field.type ?? "text"} value={form[field.name] ?? ""} onChange={(event) => setForm({ ...form, [field.name]: event.target.value })} />
@@ -376,7 +441,12 @@ export function AdminPanel() {
                   {activeMaster.fields.slice(0, 4).map((field) => <td key={field.name}>{String(row[field.name] ?? "-")}</td>)}
                   <td>
                     <button onClick={() => edit(row)}>Edit</button>
-                    <button onClick={() => remove(Number(row.id))} disabled={!row.id}>Delete</button>
+                    <button
+                      onClick={() => setPendingDelete(row)}
+                      disabled={!row.id || deletingId === Number(row.id)}
+                    >
+                      {deletingId === Number(row.id) ? "Deleting..." : "Delete"}
+                    </button>
                   </td>
                 </tr>
               )) : (
@@ -388,6 +458,42 @@ export function AdminPanel() {
         </>
         )}
       </div>
+      {pendingDelete ? (
+        <div className="modal-backdrop" role="presentation">
+          <div
+            aria-labelledby="delete-dialog-title"
+            aria-modal="true"
+            className="reset-dialog delete-dialog"
+            role="dialog"
+          >
+            <p className="eyebrow">Confirm deletion</p>
+            <h2 id="delete-dialog-title">Delete this record?</h2>
+            <p>
+              You are about to delete <strong>{String(
+                pendingDelete[activeMaster.fields[0]?.name] ?? `record #${String(pendingDelete.id)}`,
+              )}</strong>. This action cannot be undone.
+            </p>
+            <div className="delete-dialog-actions">
+              <button
+                className="outline-button"
+                disabled={deletingId !== null}
+                onClick={() => setPendingDelete(null)}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className="danger-button"
+                disabled={deletingId !== null}
+                onClick={() => void remove()}
+                type="button"
+              >
+                {deletingId !== null ? "Deleting..." : "Yes, delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

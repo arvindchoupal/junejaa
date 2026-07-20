@@ -4,6 +4,9 @@ const endpoints = {
   login: "/api/users/alieyaUsers/login",
   serviceList: "/api/service/listServices",
   serviceCreate: "/api/service/createService",
+  serviceUpdate: "/api/service/updateService",
+  serviceMasterList: "/api/serviceMaster/listServiceMaster",
+  serviceMasterCreate: "/api/serviceMaster/createServiceMaster",
   packageList: "/api/pakage/listPackages",
   packageCreate: "/api/pakage/createPackage",
   availabilityList: "/api/availability/listAvailabilitySlots",
@@ -89,12 +92,46 @@ const services = [
   ["Vastu Bundle", 77, "Vastu bundle including energy assessment and personalised remedy guidance."],
 ].map(([service_name, charges, description], index) => ({
   service_name,
+  service_category: inferServiceCategory(String(service_name)),
   charges,
   description,
   image: `${String(service_name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}.jpg`,
   display_order: index + 1,
   status: "active",
 }));
+
+function inferServiceCategory(serviceName) {
+  const lower = serviceName.toLowerCase();
+  if (lower.includes("tarot")) return "Tarot";
+  if (lower.includes("astrology") || lower.includes("forecast") || lower.includes("marriage") || lower.includes("career") || lower.includes("wealth")) return "Astrology";
+  if (lower.includes("numerology")) return "Numerology";
+  if (lower.includes("vastu")) return "Vastu";
+  if (lower.includes("energy") || lower.includes("chakra") || lower.includes("aura")) return "Energy";
+  if (lower.includes("relationship")) return "Relationship";
+  if (lower.includes("bracelet")) return "Remedy";
+  if (lower.includes("soul") || lower.includes("akashic")) return "Soul Path";
+  return "Consultation";
+}
+
+const publicServiceCategories = [
+  "Tarot",
+  "Astrology",
+  "Numerology",
+  "Vastu",
+  "Energy",
+  "Relationship",
+  "Remedy",
+  "Soul Path",
+  "Consultation",
+];
+
+const serviceCategories = publicServiceCategories.map(
+  (service_category, index) => ({
+    service_category,
+    display_order: index + 1,
+    status: "active",
+  }),
+);
 
 const packages = [
   ["5 x 30 Minute Audio Readings", 5, 144, "Five 30 minute audio readings for continued guidance."],
@@ -178,6 +215,37 @@ async function createMissing({ token, listPath, createPath, records, key, label 
   console.log(`${label}: created ${created}, skipped ${skipped}`);
 }
 
+async function syncServiceCategories(token) {
+  const existing = listFrom(await post(endpoints.serviceList, {}, token));
+  let updated = 0;
+  let unchanged = 0;
+
+  for (const service of existing) {
+    const serviceName = String(service.service_name ?? service.name ?? "").trim();
+    if (!serviceName || service.id == null) continue;
+
+    const serviceCategory = inferServiceCategory(serviceName);
+    if (String(service.service_category ?? "").trim() === serviceCategory) {
+      unchanged += 1;
+      continue;
+    }
+
+    await post(endpoints.serviceUpdate, {
+      id: Number(service.id),
+      service_name: serviceName,
+      service_category: serviceCategory,
+      charges: service.charges ?? service.price ?? 0,
+      description: service.description ?? "",
+      image: service.image ?? "",
+      display_order: service.display_order ?? 0,
+      status: service.status ?? "active",
+    }, token);
+    updated += 1;
+  }
+
+  console.log(`Service category links: updated ${updated}, unchanged ${unchanged}`);
+}
+
 if (process.argv.includes("--check-public-testimonials")) {
   try {
     const publicData = await post(endpoints.testimonialList, {});
@@ -197,6 +265,38 @@ const login = await post(endpoints.login, {
 const token = login?.data?.token ?? login?.token ?? login?.data?.data?.token;
 if (!token) throw new Error(`Login succeeded but token was not found: ${JSON.stringify(login)}`);
 
+if (process.argv.includes("--check-service-categories")) {
+  const categories = listFrom(await post(endpoints.serviceMasterList, {}, token))
+    .sort((a, b) => Number(a.display_order ?? 0) - Number(b.display_order ?? 0));
+  const liveServices = listFrom(await post(endpoints.serviceList, {}, token));
+  const serviceCounts = liveServices.reduce((counts, service) => {
+    const category = String(service.service_category ?? "Unassigned").trim() || "Unassigned";
+    counts[category] = (counts[category] ?? 0) + 1;
+    return counts;
+  }, {});
+
+  console.log("Live categories:");
+  for (const category of categories) {
+    console.log(`${category.id}: ${category.service_category} (${category.status}, order ${category.display_order})`);
+  }
+  console.log("Live service counts:", serviceCounts);
+  process.exit();
+}
+
+await createMissing({
+  token,
+  listPath: endpoints.serviceMasterList,
+  createPath: endpoints.serviceMasterCreate,
+  records: serviceCategories,
+  key: "service_category",
+  label: "Service categories",
+});
+
+if (process.argv.includes("--sync-service-categories")) {
+  await syncServiceCategories(token);
+  process.exit();
+}
+
 await createMissing({
   token,
   listPath: endpoints.serviceList,
@@ -205,6 +305,8 @@ await createMissing({
   key: "service_name",
   label: "Services",
 });
+
+await syncServiceCategories(token);
 
 await createMissing({
   token,

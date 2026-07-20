@@ -10,6 +10,13 @@ export const alieyaApiRoutes = {
     delete: "/api/service/deleteService",
     list: "/api/service/listServices",
   },
+  serviceMaster: {
+    base: "/api/serviceMaster",
+    create: "/api/serviceMaster/createServiceMaster",
+    update: "/api/serviceMaster/updateServiceMaster",
+    delete: "/api/serviceMaster/deleteServiceMaster",
+    list: "/api/serviceMaster/listServiceMaster",
+  },
   booking: {
     base: "/api/booking",
     create: "/api/booking/createBooking",

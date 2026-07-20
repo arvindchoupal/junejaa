@@ -85,6 +85,7 @@ function inferIcon(name: string) {
 export function mapService(row: Record<string, unknown>, index = 0): PublicService {
   const name = text(row.service_name ?? row.name, `Service ${index + 1}`);
   const price = number(row.charges ?? row.price, 0);
+  const serviceCategory = text(row.service_category).trim();
   return {
     id: number(row.id, index + 1),
     icon: inferIcon(name),
@@ -92,7 +93,7 @@ export function mapService(row: Record<string, unknown>, index = 0): PublicServi
     price,
     priceLabel: price ? `$${price}` : "Price on request",
     description: text(row.description, ""),
-    category: inferCategory(name),
+    category: serviceCategory || inferCategory(name),
   };
 }
 
