@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CallAPIPostPromise } from "@/components/comman";
 import { Icon } from "@/components/Icon";
+import { getRememberedEmail, storeAuthSession } from "@/lib/authStorage";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -14,6 +15,17 @@ export default function AdminLoginPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const rememberedEmail = getRememberedEmail();
+      if (!rememberedEmail) return;
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,7 +41,8 @@ export default function AdminLoginPage() {
       });
 
       const token = res?.data?.data?.token ?? res?.data?.token;
-      if (token) localStorage.setItem("token", token);
+      if (!token) throw new Error("Login succeeded but no authentication token was returned.");
+      storeAuthSession(token, rememberMe, email.trim());
       router.push("/admin/dashboard");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Login failed.");
@@ -89,7 +102,11 @@ export default function AdminLoginPage() {
         </label>
         <div className="login-actions">
           <label className="remember-row">
-            <input type="checkbox" /> Remember me
+            <input
+              checked={rememberMe}
+              onChange={(event) => setRememberMe(event.target.checked)}
+              type="checkbox"
+            /> Remember me
           </label>
           <button type="button" onClick={() => setShowForgotPassword(true)}>
             Forgot Password?

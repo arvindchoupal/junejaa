@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { alieyaApiRoutes, extractList, postAlieyaApi } from "@/lib/alieyaApi";
+import { clearAuthToken, getAuthToken } from "@/lib/authStorage";
 import { BookingCalendar } from "@/components/BookingCalendar";
 
 type Field = {
@@ -198,7 +199,7 @@ export function AdminPanel() {
   );
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
     if (!token) {
       router.push("/admin/login");
       return;
@@ -210,11 +211,11 @@ export function AdminPanel() {
 
       const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/"))) as { exp?: number };
       if (decoded.exp && decoded.exp < Date.now() / 1000) {
-        localStorage.removeItem("token");
+        clearAuthToken();
         router.push("/admin/login");
       }
     } catch {
-      localStorage.removeItem("token");
+      clearAuthToken();
       router.push("/admin/login");
     }
   }, [router]);
@@ -364,7 +365,7 @@ export function AdminPanel() {
                 <button className="outline-button" onClick={() => loadCalendarBookings()} disabled={calendarLoading}>
                   {calendarLoading ? "Refreshing..." : "Refresh"}
                 </button>
-                <button className="outline-button" onClick={() => { localStorage.clear(); router.push("/admin/login"); }}>Logout</button>
+                <button className="outline-button" onClick={() => { clearAuthToken(); router.push("/admin/login"); }}>Logout</button>
               </div>
             </div>
             {calendarError ? <p className="form-status">{calendarError}</p> : null}
@@ -382,7 +383,7 @@ export function AdminPanel() {
             <button
               className="outline-button"
               onClick={() => {
-                localStorage.clear();
+                clearAuthToken();
                 router.push("/admin/login");
               }}
             >

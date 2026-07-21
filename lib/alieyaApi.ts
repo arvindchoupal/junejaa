@@ -1,3 +1,5 @@
+import { getAuthToken } from "./authStorage";
+
 export const ALIEYA_API_BASE_URL =
   "https://websites-backend-ba3gq.ondigitalocean.app";
 
@@ -62,7 +64,7 @@ export async function postAlieyaApi<TPayload extends Record<string, unknown>>(
   path: string,
   payload: TPayload,
 ) {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getAuthToken();
 
   const response = await fetch(getAlieyaApiUrl(path), {
     method: "POST",

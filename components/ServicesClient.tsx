@@ -13,6 +13,8 @@ export function ServicesClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [expandedServiceIds, setExpandedServiceIds] = useState<Set<number>>(new Set());
+  const [apiCategories, setApiCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
     let isMounted = true;
@@ -21,10 +23,26 @@ export function ServicesClient() {
       setIsLoading(true);
       setError("");
       try {
-        const data = await postAlieyaApi(alieyaApiRoutes.service.list, {});
-        const rows = extractList(data);
+        const [serviceData, categoryData] = await Promise.all([
+          postAlieyaApi(alieyaApiRoutes.service.list, {}),
+          postAlieyaApi(alieyaApiRoutes.serviceMaster.list, {}).catch(() => null),
+        ]);
+        const rows = extractList(serviceData);
         const mapped = rows.filter(isActiveRow).map(mapService).filter((item) => item.name);
-        if (isMounted) setServices(mapped);
+        const usedCategories = new Set(mapped.map((service) => service.category));
+        const orderedApiCategories = extractList(categoryData)
+          .filter(isActiveRow)
+          .sort((a, b) => Number(a.display_order ?? 0) - Number(b.display_order ?? 0))
+          .map((row) => String(row.service_category ?? "").trim())
+          .filter((category) => category && usedCategories.has(category));
+        const remainingCategories = [...usedCategories].filter(
+          (category) => !orderedApiCategories.includes(category),
+        );
+
+        if (isMounted) {
+          setServices(mapped);
+          setApiCategories([...orderedApiCategories, ...remainingCategories]);
+        }
       } catch (err) {
         if (isMounted) {
           setError(err instanceof Error ? err.message : "Unable to load services.");
@@ -42,9 +60,15 @@ export function ServicesClient() {
   }, []);
 
   const categories = useMemo(
-    () => Array.from(new Set(services.map((service) => service.category))),
-    [services],
+    () => apiCategories.length
+      ? apiCategories
+      : Array.from(new Set(services.map((service) => service.category))),
+    [apiCategories, services],
   );
+
+  const visibleCategories = selectedCategory === "all"
+    ? categories
+    : categories.filter((category) => category === selectedCategory);
 
   function toggleDescription(serviceId: number) {
     setExpandedServiceIds((current) => {
@@ -69,7 +93,28 @@ export function ServicesClient() {
 
   return (
     <>
-      {categories.map((category) => (
+      <nav aria-label="Filter services by category" className="service-category-filter">
+        <button
+          aria-pressed={selectedCategory === "all"}
+          className={selectedCategory === "all" ? "active" : ""}
+          onClick={() => setSelectedCategory("all")}
+          type="button"
+        >
+          All Services
+        </button>
+        {categories.map((category) => (
+          <button
+            aria-pressed={selectedCategory === category}
+            className={selectedCategory === category ? "active" : ""}
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            type="button"
+          >
+            {category}
+          </button>
+        ))}
+      </nav>
+      {visibleCategories.map((category) => (
         <div className="catalog-group" key={category}>
           <h2>{category}</h2>
           <div className="catalog-grid">

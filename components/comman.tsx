@@ -1,9 +1,10 @@
 import { ALIEYA_API_BASE_URL } from "@/lib/alieyaApi";
+import { getAuthToken } from "@/lib/authStorage";
 
 export const baseUrl = ALIEYA_API_BASE_URL;
 
 export const CallAPIPostPromise = (path: string, data: Record<string, unknown>) => {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = getAuthToken();
 
   return fetch(`${baseUrl}${path}`, {
     method: "POST",
