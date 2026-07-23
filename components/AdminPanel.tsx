@@ -334,7 +334,12 @@ export function AdminPanel() {
   function edit(row: Record<string, unknown>) {
     const next = { ...activeMaster.initial };
     for (const field of activeMaster.fields) {
-      next[field.name] = row[field.name] == null ? "" : String(row[field.name]);
+      const value = row[field.name];
+      next[field.name] = value == null
+        ? ""
+        : field.type === "date"
+          ? String(value).slice(0, 10)
+          : String(value);
     }
     setForm(next);
     setEditingId(Number(row.id));
