@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/Icon";
+import { ServiceDetailsModal } from "@/components/ServiceDetailsModal";
 import { alieyaApiRoutes, extractList, postAlieyaApi } from "@/lib/alieyaApi";
 import { isActiveRow, mapService, type PublicService } from "@/lib/liveData";
 
@@ -58,23 +59,6 @@ export function ServicesClient() {
       isMounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    if (!activeService) return;
-
-    const previousOverflow = document.body.style.overflow;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setActiveService(null);
-    };
-
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", closeOnEscape);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [activeService]);
 
   const categories = useMemo(
     () => apiCategories.length
@@ -167,50 +151,10 @@ export function ServicesClient() {
         </div>
       ))}
       {activeService ? (
-        <div
-          className="service-modal-backdrop"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setActiveService(null);
-          }}
-          role="presentation"
-        >
-          <section
-            aria-labelledby={`service-modal-title-${activeService.id}`}
-            aria-modal="true"
-            className="service-modal"
-            role="dialog"
-          >
-            <button
-              aria-label="Close service details"
-              className="service-modal-close"
-              onClick={() => setActiveService(null)}
-              type="button"
-            >
-              ×
-            </button>
-            <header className="service-modal-header">
-              <span className="service-icon">
-                <Icon name={activeService.icon} />
-              </span>
-              <div>
-                <span className="service-modal-category">{activeService.category}</span>
-                <h2 id={`service-modal-title-${activeService.id}`}>{activeService.name}</h2>
-              </div>
-            </header>
-            <div className="service-modal-copy">
-              <p>{activeService.description}</p>
-            </div>
-            <footer className="service-modal-footer">
-              <div>
-                <span className="catalog-card-price-label">Reading fee</span>
-                <strong>{activeService.priceLabel}</strong>
-              </div>
-              <Link href={`/booking?type=service&id=${activeService.id}`}>
-                Book This Reading
-              </Link>
-            </footer>
-          </section>
-        </div>
+        <ServiceDetailsModal
+          service={activeService}
+          onClose={() => setActiveService(null)}
+        />
       ) : null}
     </>
   );

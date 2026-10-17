@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { FeaturedServices } from "@/components/FeaturedServices";
 import { SiteFrame } from "@/components/SiteChrome";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { getLivePackages, getLiveServices, getLiveTestimonials } from "@/lib/liveData";
@@ -56,17 +57,7 @@ export default async function Home() {
       <section className="services-section">
         <h2>Services</h2>
         <div className="divider">✦</div>
-        <div className="service-grid">
-          {featuredServices.map((service) => (
-            <article className="service-card" key={service.name}>
-              <span className="service-icon"><Icon name={service.icon} /></span>
-              <h3>{service.name}</h3>
-              <p>{service.description}</p>
-              <strong>{service.priceLabel}</strong>
-              <Link href="/services">Learn More →</Link>
-            </article>
-          ))}
-        </div>
+        <FeaturedServices services={featuredServices} />
         <div className="package-panel">
           <h3>Tarot Packages</h3>
           <ul>
