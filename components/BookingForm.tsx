@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { alieyaApiRoutes, extractList, postAlieyaApi } from "@/lib/alieyaApi";
 import { isActiveRow, mapPackage, mapService, type PublicPackage, type PublicService } from "@/lib/liveData";
-import moment from "moment";
 
 type BookingState = {
   booking_type: "service" | "package";
@@ -133,7 +132,7 @@ export function BookingForm({
         mobile: form.mobile,
         email: form.email,
         country: form.country,
-        booking_date: form.booking_date?moment(form.booking_date).format("DD/MM/YYYY"):form.booking_date,
+        booking_date: form.booking_date,
         booking_time: form.booking_time,
         amount: selectedAmount,
         payment_status: "pending",
