@@ -485,7 +485,7 @@ h2 {
 .package-panel ul {
   display: grid;
   gap: 10px 28px;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   list-style: none;
   margin: 0;
   padding: 0;
@@ -1123,7 +1123,7 @@ h2 {
 }
 
 .packages-grid {
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 }
 
 .package-card {
@@ -2389,4 +2389,13 @@ h2 {
 
 @media (prefers-reduced-motion: reduce) {
   .consulting-copy b { animation-duration: 1.5s; }
+}
+
+@media (max-width: 480px) {
+  .catalog-card-actions { grid-template-columns: minmax(0, 1fr); }
+  .catalog-card-actions a { grid-column: 1; grid-row: auto; margin-top: 12px; }
+  .catalog-card-actions .price-row { flex-wrap: wrap; }
+  .service-modal { max-height: 88dvh; overflow-wrap: anywhere; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+  .service-modal-header { grid-template-columns: minmax(0, 1fr); }
+  .service-modal-header h2 { overflow-wrap: anywhere; }
 }
